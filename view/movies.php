@@ -14,7 +14,7 @@
         <div class="nav-container">
             <div class="nav-head">
                 <div class="nav-title">
-                    <h1><a href="index.html">MyWibu</a></h1>
+                    <h1><a href="index.php">MyWibu</a></h1>
                 </div>
 
                 <div class="nav-listcr">
@@ -25,9 +25,9 @@
 
             <div class="nav-list">
                 <ul>
-                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.php">Home</a></li>
                     <li><a href="">My List</a></li>
-                    <li><a href="anime.html">Anime</a></li>
+                    <li><a href="anime.php">Anime</a></li>
                     <li><a href="#">Movies</a></li>
                 </ul>
                 <form class="nav-search" role="search">
@@ -201,7 +201,7 @@
     <div class="footer-section">
         <div class="footer-container">
             <div class="footer-title">
-                <h1><a href="index.html">MyWibu</a></h1>
+                <h1><a href="index.php">MyWibu</a></h1>
                 <p>Make Your List, Make Your World</p>
             </div>
 

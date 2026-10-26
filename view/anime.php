@@ -33,7 +33,7 @@
             <div class="nav-list">
                 <ul>
                     <li>
-                        <a href="index.html">Home</a>
+                        <a href="index.php">Home</a>
                     </li>
 
                     <li>
@@ -44,7 +44,7 @@
                         <a href="#">Anime</a>
                     </li>
                     <li>
-                        <a href="movies.html">Movies</a>
+                        <a href="movies.php">Movies</a>
                     </li>
                 </ul>
                 <form class="nav-search" role="search">

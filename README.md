@@ -1,20 +1,23 @@
 # MyWibu
 
-MyWibu adalah website katalog anime dan film anime. Website ini menyediakan
-halaman Home, Anime, dan Movies dengan pencarian judul serta tampilan yang
-menyesuaikan ukuran layar.
+MyWibu adalah katalog anime dan film anime dengan akun pengguna, dashboard,
+profil, dan library pribadi untuk menyimpan anime serta status tontonan.
 
 ## Struktur proyek
 
-- `view/` — halaman HTML.
+- `view/` — halaman PHP, autentikasi, dan koneksi database.
 - `css/` — stylesheet.
 - `js/` — skrip pencarian.
 - `img/` — gambar yang digunakan oleh halaman.
 
 ## Menjalankan secara lokal
 
-Buka `view/index.html` di browser. Navigasi ke halaman Anime dan Movies
-tersedia melalui menu.
+Jalankan proyek melalui server PHP (misalnya Laragon) dan buka
+`http://localhost/MyWibu/view/`. Pastikan MySQL aktif dan database `mywibu_db`
+tersedia. Sesuaikan kredensial database di `view/koneksi.php` bila diperlukan.
+Tabel akun `users` serta tabel library `anime_library` dibuat otomatis ketika
+halaman aplikasi digunakan. Pengguna baru dapat membuat akun dari halaman
+signup; setelah berhasil, pengguna langsung diarahkan ke dashboard.
 
 ## Hak cipta dan penggunaan
 

@@ -1,3 +1,8 @@
+<?php
+require_once 'auth.php';
+$is_logged_in = !empty($_SESSION['user_id']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,11 +24,11 @@
 
                 <div class="nav-listcr">
                     <h2>
-                        <a href="">Make Your List</a>
+                        <a href="<?= $is_logged_in ? 'dashboard.php' : 'signup.php' ?>">Make Your List</a>
                     </h2>
 
                     <h2 class="log-in">
-                        <a href="">Log In</a>
+                        <a href="<?= $is_logged_in ? 'dashboard.php' : 'login.php' ?>"><?= $is_logged_in ? 'Dashboard' : 'Log In' ?></a>
                     </h2>
                 </div>
 
@@ -36,14 +41,14 @@
                     </li>
 
                     <li>
-                        <a href="">My List</a>
+                        <a href="<?= $is_logged_in ? 'library.php' : 'login.php' ?>">My List</a>
                     </li>
 
                     <li>
-                        <a href="anime.html">Anime</a>
+                        <a href="anime.php">Anime</a>
                     </li>
                     <li>
-                        <a href="movies.html">Movies</a>
+                        <a href="movies.php">Movies</a>
                     </li>
                 </ul>
                 <form class="nav-search" role="search">
@@ -77,7 +82,7 @@
 
             <div class="hero-btn">
                 <h2>
-                    <a href="">Start now!</a>
+                    <a href="<?= $is_logged_in ? 'dashboard.php' : 'signup.php' ?>">Start now!</a>
                 </h2>
             </div>
         </div>
