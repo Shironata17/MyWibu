@@ -1,8 +1,8 @@
 <?php
-require_once 'auth.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !verify_csrf_token()) {
-    header('Location: dashboard.php');
+    header('Location: ../account/dashboard.php');
     exit;
 }
 

@@ -1,8 +1,8 @@
 <?php
-require_once 'auth.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'auth.php';
 
 if (!empty($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
+    header('Location: ../account/dashboard.php');
     exit;
 }
 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             session_regenerate_id(true);
             $_SESSION['user_id'] = (int) $user['id'];
             $_SESSION['nama'] = $user['nama'];
-            header('Location: dashboard.php');
+            header('Location: ../account/dashboard.php');
             exit;
         }
 
@@ -40,12 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#160d27">
     <title>Masuk | MyWibu</title>
-    <link rel="stylesheet" href="../css/auth.css">
+    <script src="../../js/theme.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/auth.css">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-art">
-            <a class="brand" href="index.php"><span class="brand-mark">✦</span> MyWibu</a>
+            <a class="brand" href="../index.php"><span class="brand-mark">✦</span> MyWibu</a>
             <div class="art-copy">
                 <span class="eyebrow">YOUR ANIME, YOUR STORY</span>
                 <h1>Setiap cerita punya tempatnya.</h1>
@@ -58,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </section>
         <section class="auth-panel">
             <div class="auth-form-wrap">
-                <p class="mobile-brand"><a class="brand" href="index.php"><span class="brand-mark">✦</span> MyWibu</a></p>
+                <p class="mobile-brand"><a class="brand" href="../index.php"><span class="brand-mark">✦</span> MyWibu</a></p>
                 <span class="eyebrow">SELAMAT DATANG KEMBALI</span>
                 <h2>Masuk ke akunmu</h2>
                 <p class="form-intro">Lanjutkan mengatur daftar anime kesukaanmu.</p>
@@ -79,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button class="button button-primary" type="submit">Masuk <span aria-hidden="true">→</span></button>
                 </form>
                 <p class="auth-switch">Belum punya akun? <a href="signup.php">Buat akun</a></p>
-                <a class="back-link" href="index.php">← Kembali ke beranda</a>
+                <a class="back-link" href="../index.php">← Kembali ke beranda</a>
             </div>
         </section>
     </main>

@@ -1,301 +1,104 @@
 <?php
-require_once 'auth.php';
-$is_logged_in = !empty($_SESSION['user_id']);
-?>
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'auth.php';
+ensure_stream_tables($koneksi);
 
+$is_logged_in = !empty($_SESSION['user_id']);
+$display_name = $is_logged_in && !empty($_SESSION['nama']) ? $_SESSION['nama'] : '';
+$current_user = $is_logged_in ? fetch_current_user($koneksi) : null;
+$is_admin = $current_user && $current_user['role'] === 'admin';
+$latest_videos = mysqli_query($koneksi, 'SELECT id, title, description, category, genre, cover_file FROM videos ORDER BY created_at DESC LIMIT 6');
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyWibu - Home</title>
+    <meta name="theme-color" content="#f8f7fb">
+    <title>MyWibu | Rumah untuk cerita anime-mu</title>
+    <script src="../js/theme.js"></script>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/auth.css">
 </head>
-
-<body>
-    <div class="nav-sec">
-        <div class="nav-container">
-            <div class="nav-head">
-                <div class="nav-title">
-                    <h1>
-                        <a href="">MyWibu</a>
-                    </h1>
-                </div>
-
-                <div class="nav-listcr">
-                    <h2>
-                        <a href="<?= $is_logged_in ? 'dashboard.php' : 'signup.php' ?>">Make Your List</a>
-                    </h2>
-
-                    <h2 class="log-in">
-                        <a href="<?= $is_logged_in ? 'dashboard.php' : 'login.php' ?>"><?= $is_logged_in ? 'Dashboard' : 'Log In' ?></a>
-                    </h2>
-                </div>
-
-            </div>
-
-            <div class="nav-list">
-                <ul>
-                    <li>
-                        <a href="#">Home</a>
-                    </li>
-
-                    <li>
-                        <a href="<?= $is_logged_in ? 'library.php' : 'login.php' ?>">My List</a>
-                    </li>
-
-                    <li>
-                        <a href="anime.php">Anime</a>
-                    </li>
-                    <li>
-                        <a href="movies.php">Movies</a>
-                    </li>
-                </ul>
-                <form class="nav-search" role="search">
-                    <label class="visually-hidden" for="site-search">Cari anime atau movie</label>
-                    <input id="site-search" type="search" placeholder="Cari anime atau movie...">
-                    <button type="submit" aria-label="Cari">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="10.8" cy="10.8" r="6.8"></circle>
-                            <path d="m16 16 5 5"></path>
-                        </svg>
-                    </button>
-                    <span class="search-status visually-hidden" aria-live="polite"></span>
+<body class="app-page">
+    <header class="app-header">
+        <a class="brand" href="index.php"><span class="brand-mark">✦</span> MyWibu</a>
+        <nav class="app-nav" aria-label="Navigasi utama">
+            <a class="active" href="index.php">Beranda</a>
+            <a href="stream/anime.php">Anime</a>
+            <a href="stream/movies.php">Movies</a>
+            <?php if ($is_logged_in): ?>
+            <a href="account/dashboard.php">Dashboard</a>
+            <a href="account/library.php">Library</a>
+            <a href="account/profile.php">Profil</a>
+            <?php endif; ?>
+            <?php if ($is_admin): ?><a href="admin/admin.php">Admin</a><?php endif; ?>
+        </nav>
+        <?php if ($is_logged_in): ?>
+            <div class="header-user">
+                <span class="avatar"><?= h(strtoupper(substr($display_name, 0, 1))) ?></span>
+                <span><?= h($display_name) ?></span>
+                <form method="post" action="auth/logout.php">
+                    <input type="hidden" name="csrf_token" value="<?= h(create_csrf_token()) ?>">
+                    <button class="logout-link" type="submit">Keluar</button>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <div class="hero-section">
-        <div class="hero-container">
-            <div class="shape-color">
-
+        <?php else: ?>
+            <div class="public-actions">
+                <a class="public-login" href="auth/login.php">Masuk</a>
+                <a class="button button-primary" href="auth/signup.php">Buat akun <span aria-hidden="true">→</span></a>
             </div>
+        <?php endif; ?>
+    </header>
 
-            <div class="hero-title">
-                <h1>Make Your List, Make Your World</h1>
+    <main class="app-main public-main">
+        <section class="welcome-banner public-banner">
+            <div class="public-banner-copy">
+                <span class="eyebrow"><?= $is_logged_in ? 'SELAMAT DATANG KEMBALI' : 'SELAMAT DATANG DI MYWIBU' ?></span>
+                <h1><?php if ($is_logged_in): ?>Halo, <?= h($display_name) ?> <span aria-hidden="true">✦</span><?php else: ?>Semua cerita anime-mu,<br><span>satu tempat.</span><?php endif; ?></h1>
+                <p><?= $is_logged_in ? 'Lanjutkan menonton rilisan terbaru dan berbagi pendapat dengan komunitas.' : 'Temukan anime dan movie terbaru, tonton langsung, lalu bagikan pendapatmu.' ?></p>
+                <a class="button button-light" href="<?= $is_logged_in ? 'stream/anime.php' : 'auth/signup.php' ?>"><?= $is_logged_in ? 'Jelajahi katalog' : 'Mulai sekarang' ?> <span aria-hidden="true">→</span></a>
             </div>
+            <div class="banner-decoration" aria-hidden="true">✧</div>
+        </section>
 
-            <div class="hero-teks">
-                <p>MyWibu adalah website yang dibuat sebagai wadah untuk menampung daftar isi anime dan berbagai note review terkait Anime tersebut.</p>
+        <section class="stats-grid public-highlights" aria-label="Fitur MyWibu">
+            <article class="stat-card public-highlight">
+                <span class="stat-icon" aria-hidden="true">▤</span>
+                <div><p>Katalog streaming</p><strong>Tonton anime</strong><span>Jelajahi anime dan movie yang tersedia di MyWibu.</span></div>
+            </article>
+            <article class="stat-card public-highlight">
+                <span class="stat-icon" aria-hidden="true">▶</span>
+                <div><p>Rilisan terbaru</p><strong>Selalu update</strong><span>Temukan video terbaru yang diunggah admin.</span></div>
+            </article>
+            <article class="stat-card public-highlight">
+                <span class="stat-icon" aria-hidden="true">♡</span>
+                <div><p>Ruang komunitas</p><strong>Komentar</strong><span>Masuk untuk berbagi kesan dan berdiskusi setelah menonton.</span></div>
+            </article>
+        </section>
+
+        <section class="content-card public-feature">
+            <div class="section-heading">
+                <div><span class="eyebrow">RILISAN TERBARU</span><h2>Tontonan baru untukmu</h2></div>
+                <a class="text-link" href="stream/anime.php">Jelajahi katalog →</a>
             </div>
-
-            <div class="hero-btn">
-                <h2>
-                    <a href="<?= $is_logged_in ? 'dashboard.php' : 'signup.php' ?>">Start now!</a>
-                </h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="features-section">
-        <div class="feature-container">
-            <div class="feature-title">
-                <h1>Feature</h1>
-            </div>
-        </div>
-
-        <div class="feature-cards">
-            <div class="card">
-                <div class="card-title">
-                    <h1>Easy To Acces</h1>
+            <?php if (mysqli_num_rows($latest_videos) === 0): ?>
+                <div class="empty-state"><span aria-hidden="true">▶</span><h3>Belum ada tontonan</h3><p>Anime dan movie terbaru akan tampil di sini setelah admin menerbitkannya.</p><?php if (!$is_admin): ?><a class="button button-primary" href="stream/anime.php">Jelajahi katalog</a><?php endif; ?></div>
+            <?php else: ?>
+                <div class="stream-grid stream-grid-home">
+                    <?php while ($video = mysqli_fetch_assoc($latest_videos)): ?>
+                        <a class="stream-card" href="stream/watch.php?id=<?= (int) $video['id'] ?>">
+                            <div class="stream-poster">
+                                <img src="<?= $video['cover_file'] ? '../uploads/covers/' . rawurlencode(basename($video['cover_file'])) : '../img/oshinoko.jpg' ?>" alt="">
+                                <span class="play-badge" aria-hidden="true">▶</span>
+                                <span class="category-badge"><?= h($video['genre'] ?: ucfirst($video['category'])) ?></span>
+                            </div>
+                            <div class="stream-card-copy"><h3><?= h($video['title']) ?></h3><p><?= h($video['description']) ?></p><span class="text-link">Tonton sekarang →</span></div>
+                        </a>
+                    <?php endwhile; ?>
                 </div>
-
-                <div class="card-desc">
-                    Web ini mudah diakses diberbagai device dan flexible dimana saja
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">
-                    <h1>Always Together</h1>
-                </div>
-
-                <div class="card-desc">
-                    Web ini dibebaskan oleh semua pengguna untuk berinteraksi satu sama lain 
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">
-                    <h1>Modern Layout</h1>
-                </div>
-
-                <div class="card-desc">
-                    Memiliki penampilan yang modern dan terkini. Menyediakan berbagai menu yang mendukung keinginan pengguna
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="popular-section">
-        <div class="popular-container">
-            <div class="pop-cards">
-                <div class="pop-title">
-                    <h1>Populer</h1>
-                    <div class="shape-pop"></div>
-                </div>
-
-                <div class="pcards">
-                    <div class="p-num">
-                        <p>
-                            01
-                        </p>
-                    </div>
-                    
-                    <div class="p-img">
-                        <img src="../img/oshinoko.jpg" alt="">
-                    </div>
-
-                    <div class="p-text">
-                        <h1>
-                            <a href="">Oshi No Ko</a>
-                        </h1>
-
-                        <p>
-                            <a href="">Romance</a> <a href="">Drama</a>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="pcards">
-                    <div class="p-num">
-                        <p>
-                            02
-                        </p>
-                    </div>
-                    
-                    <div class="p-img">
-                        <img src="../img/oshinoko.jpg" alt="">
-                    </div>
-
-                    <div class="p-text">
-                        <h1>
-                            <a href="">Oshi No Ko</a>
-                        </h1>
-
-                        <p>
-                            <a href="">Romance</a> <a href="">Drama</a>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="pcards">
-                    <div class="p-num">
-                        <p>
-                            03
-                        </p>
-                    </div>
-                    
-                    <div class="p-img">
-                        <img src="../img/oshinoko.jpg" alt="">
-                    </div>
-
-                    <div class="p-text">
-                        <h1>
-                            <a href="">Oshi No Ko</a>
-                        </h1>
-
-                        <p>
-                            <a href="">Romance</a> <a href="">Drama</a>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="pcards">
-                    <div class="p-num">
-                        <p>
-                            04
-                        </p>
-                    </div>
-                    
-                    <div class="p-img">
-                        <img src="../img/oshinoko.jpg" alt="">
-                    </div>
-
-                    <div class="p-text">
-                        <h1>
-                            <a href="">Oshi No Ko</a>
-                        </h1>
-
-                        <p>
-                            <a href="">Romance</a> <a href="">Drama</a>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="pcards">
-                    <div class="p-num">
-                        <p>
-                            05
-                        </p>
-                    </div>
-                    
-                    <div class="p-img">
-                        <img src="../img/oshinoko.jpg" alt="">
-                    </div>
-
-                    <div class="p-text">
-                        <h1>
-                            <a href="">Oshi No Ko</a>
-                        </h1>
-
-                        <p>
-                            <a href="">Romance</a> <a href="">Drama</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="movies-section">
-                <div class="mv-title">
-                    <p class="note">Movies Section</p>
-
-                    <h1 class="title">
-                        Pengalaman Satu Jam Terbaik
-                    </h1>
-
-                    <p class="desc">
-                        Tonton dan alami satu jam pertama yang menegangkan, sedih, maupun bahagia yang hanya bisa ditemukan dalam Anime Movie.
-                    </p>
-
-                    <div class="img-cont">
-                        <div class="img-box">
-                            <img class="img-left" src="../img/oshinoko.jpg" alt="">
-                        </div>
-
-                        <div class="img-box">
-                            <img class="img-mid" src="../img/oshinoko.jpg" alt="">
-                        </div>
-
-                        <div class="img-box">
-                            <img class="img-right" src="../img/oshinoko.jpg" alt="">
-                        </div>
-                    </div>
-
-                    <div class="mv-btn">
-                        <a href="">Cari Sekarang</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer-section">
-        <div class="footer-container">
-            <div class="footer-title">
-                <h1>
-                    <a href="">MyWibu</a>
-                </h1>
-
-                <p>Make Your List, Make Your World</p>
-            </div>
-
-            <div class="footer-desc">
-                <p>Copyright &copy By Hyang Harinata</p>
-            </div>
-        </div>
-    </div>
-    <script src="../js/search.js"></script>
+            <?php endif; ?>
+        </section>
+        <footer class="public-footer"><a class="brand" href="index.php"><span class="brand-mark">✦</span> MyWibu</a><span>Make your list, make your world.</span></footer>
+    </main>
 </body>
 </html>
